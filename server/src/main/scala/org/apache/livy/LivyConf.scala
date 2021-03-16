@@ -296,6 +296,14 @@ object LivyConf {
   val KUBERNETES_INGRESS_TLS_SECRET_NAME =
   Entry("livy.server.kubernetes.ingress.tls.secretName", "spark-cluster-tls")
 
+  // Whether to create Kubernetes istio virtual service for Spark UI.
+  val KUBERNETES_ISTIO_VIRTUAL_SERVICE_CREATE = Entry("livy.server.kubernetes.istio.virtualService.create", false)
+  // Istio Ingress gateway to use
+  val KUBERNETES_ISTIO_VIRTUAL_SERVICE_GATEWAY = Entry("livy.server.kubernetes.istio.gateway", "istio-system/ingress-gateway")
+  // Istio hosts Domain to use
+  val KUBERNETES_ISTIO_VIRTUAL_SERVICE_HOSTS_DOMAIN = Entry("livy.server.kubernetes.istio.hostsDomain", "")
+
+
   val KUBERNETES_GRAFANA_LOKI_ENABLED = Entry("livy.server.kubernetes.grafana.loki.enabled", false)
   val KUBERNETES_GRAFANA_URL = Entry("livy.server.kubernetes.grafana.url", "http://localhost:3000")
   val KUBERNETES_GRAFANA_LOKI_DATASOURCE =

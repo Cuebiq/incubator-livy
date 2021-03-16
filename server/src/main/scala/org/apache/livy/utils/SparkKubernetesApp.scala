@@ -20,7 +20,6 @@ package org.apache.livy.utils
 import java.net.URLEncoder
 import java.util.Collections
 import java.util.concurrent.TimeoutException
-
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent._
@@ -28,12 +27,11 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
-
 import io.fabric8.kubernetes.api.model.{HasMetadata, OwnerReferenceBuilder, Pod, Service, ServiceBuilder}
 import io.fabric8.kubernetes.api.model.extensions.{Ingress, IngressBuilder}
 import io.fabric8.kubernetes.client._
+import me.snowdrop.istio.api.networking.v1beta1.{HTTPMatchRequestBuilder, HTTPRouteBuilder, HTTPRouteDestinationBuilder, VirtualService, VirtualServiceBuilder}
 import org.apache.commons.lang.StringUtils
-
 import org.apache.livy.{LivyConf, Logging, Utils}
 
 object SparkKubernetesApp extends Logging {
@@ -183,6 +181,10 @@ class SparkKubernetesApp private[utils](
         if (livyConf.getBoolean(LivyConf.KUBERNETES_INGRESS_CREATE)) {
           withRetry(kubernetesClient.createSparkUIIngress(app, livyConf))
         }
+        if (livyConf.getBoolean(LivyConf.KUBERNETES_ISTIO_VIRTUAL_SERVICE_CREATE)) {
+          withRetry(kubernetesClient.createSparkUIIstioVirtualService(app, livyConf))
+        }
+
 
         var appInfo = AppInfo()
         while (isRunning) {
@@ -512,6 +514,50 @@ private[utils] class LivyKubernetesClient(
   }
 
   def getDefaultNamespace: String = client.getNamespace
+
+  def createSparkUIIstioVirtualService(app: KubernetesApplication, livyConf: LivyConf): Unit = {
+    val sparkUIService = buildSparkUIService(app)
+    val serviceName = sparkUIService.getMetadata.getName
+    val namespace = sparkUIService.getMetadata.getNamespace
+    val domain = livyConf.get(LivyConf.KUBERNETES_ISTIO_VIRTUAL_SERVICE_HOSTS_DOMAIN)
+    val sparkUIIstioVirtualService = buildSparkUIIstioVirtualService(
+      app,
+      livyConf.get(LivyConf.KUBERNETES_ISTIO_VIRTUAL_SERVICE_GATEWAY),
+      s"$serviceName-spark-ui-$namespace.$domain",
+      sparkUIService
+    )
+
+    val resources: Seq[HasMetadata] = Seq(sparkUIService, sparkUIIstioVirtualService)
+    addOwnerReference(app.getApplicationPod, resources: _*)
+    client.resourceList(resources.asJava).createOrReplace()
+
+  }
+
+  private def buildSparkUIIstioVirtualService(app: KubernetesApplication, gateway: String, host: String, service: Service): VirtualService = {
+
+    new VirtualServiceBuilder()
+      .withNewMetadata()
+        .withName(service.getMetadata.getName)
+        .withNamespace(service.getMetadata.getNamespace)
+      .endMetadata()
+      .withNewSpec()
+        .withGateways(gateway)
+        .withHosts(host)
+        .withHttp(
+          new HTTPRouteBuilder()
+            .withMatch(
+              new HTTPMatchRequestBuilder()
+              .withNewAuthority().withNewExactMatchType(host).endAuthority()
+              .build())
+            .withRoute(
+              new HTTPRouteDestinationBuilder()
+                .withNewDestination()
+                .withHost(service.toString)
+                .withNewPort(4040).endDestination()
+                .build())
+          .build())
+      .endSpec().build()
+  }
 
   def createSparkUIIngress(app: KubernetesApplication, livyConf: LivyConf): Unit = {
     val sparkUIService = buildSparkUIService(app)

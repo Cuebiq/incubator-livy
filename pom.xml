@@ -84,7 +84,7 @@
     <spark.scala-2.11.version>2.4.5</spark.scala-2.11.version>
     <spark.scala-2.12.version>2.4.5</spark.scala-2.12.version>
     <spark.version>${spark.scala-2.11.version}</spark.version>
-    <kubernetes.client.version>4.6.4</kubernetes.client.version>
+    <kubernetes.client.version>5.1.0</kubernetes.client.version>
     <hive.version>3.0.0</hive.version>
     <commons-codec.version>1.9</commons-codec.version>
     <httpclient.version>4.5.3</httpclient.version>
@@ -171,6 +171,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
+    <istio-java-api.version>1.7.7.1</istio-java-api.version>
   </properties>
 
   <repositories>
@@ -262,6 +263,24 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>me.snowdrop</groupId>
+        <artifactId>istio-client</artifactId>
+        <version>${istio-java-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>me.snowdrop</groupId>
+        <artifactId>istio-model</artifactId>
+        <version>${istio-java-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>me.snowdrop</groupId>
+        <artifactId>istio-common</artifactId>
+        <version>${istio-java-api.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>log4j</groupId>

@@ -33,6 +33,21 @@
   <dependencies>
 
     <dependency>
+      <groupId>me.snowdrop</groupId>
+      <artifactId>istio-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>me.snowdrop</groupId>
+      <artifactId>istio-model</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>me.snowdrop</groupId>
+      <artifactId>istio-common</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>livy-core_${scala.binary.version}</artifactId>
       <version>${project.version}</version>
