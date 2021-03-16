@@ -492,7 +492,7 @@ private[utils] class LivyKubernetesClient(
     val appLog = getApplicationLog(app, cacheLogSize)
     val ingress = getIngress(app)
     val virtualService = getVirtualService(app)
-    KubernetesAppReport(driver, executors, appLog, ingress,virtualService, livyConf)
+    KubernetesAppReport(driver, executors, appLog, ingress, virtualService, livyConf)
   }
 
   private def getApplicationLog(
