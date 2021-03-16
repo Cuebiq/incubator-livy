@@ -31,6 +31,7 @@ import io.fabric8.kubernetes.api.model.{HasMetadata, OwnerReferenceBuilder, Pod,
 import io.fabric8.kubernetes.api.model.extensions.{Ingress, IngressBuilder}
 import io.fabric8.kubernetes.client._
 import me.snowdrop.istio.api.networking.v1beta1.{HTTPMatchRequestBuilder, HTTPRouteBuilder, HTTPRouteDestinationBuilder, VirtualService, VirtualServiceBuilder}
+import me.snowdrop.istio.client.{DefaultIstioClient}
 import org.apache.commons.lang.StringUtils
 import org.apache.livy.{LivyConf, Logging, Utils}
 
@@ -329,6 +330,7 @@ private[utils] case class KubernetesAppReport(
     executors: Seq[Pod],
     appLog: IndexedSeq[String],
     ingress: Option[Ingress],
+    virtualService: Option[VirtualService],
     livyConf: LivyConf) {
 
   import KubernetesConstants._
@@ -389,7 +391,9 @@ private[utils] case class KubernetesAppReport(
     val path = driver
       .map(_.getMetadata.getLabels.getOrDefault(SPARK_APP_TAG_LABEL, "unknown"))
     val protocol = livyConf.get(LivyConf.KUBERNETES_INGRESS_PROTOCOL)
+    val virtualServiceHost = virtualService.flatMap( i => Try(virtualService.get.getSpec.getHosts.get(0)).toOption)
     if (host.isDefined && path.isDefined) Some(s"$protocol://${host.get}/${path.get}")
+    else if (virtualService.isDefined) virtualServiceHost
     else None
   }
 
@@ -487,7 +491,8 @@ private[utils] class LivyKubernetesClient(
     val executors = pods.filter(isExecutor)
     val appLog = getApplicationLog(app, cacheLogSize)
     val ingress = getIngress(app)
-    KubernetesAppReport(driver, executors, appLog, ingress, livyConf)
+    val virtualService = getVirtualService(app)
+    KubernetesAppReport(driver, executors, appLog, ingress,virtualService, livyConf)
   }
 
   private def getApplicationLog(
@@ -503,6 +508,13 @@ private[utils] class LivyKubernetesClient(
     client.extensions.ingresses.inNamespace(app.getApplicationNamespace)
       .withLabel(SPARK_APP_TAG_LABEL, app.getApplicationTag)
       .list.getItems.asScala.headOption
+  }
+
+  private def getVirtualService(app: KubernetesApplication): Option[VirtualService] = {
+    val istioClient = new DefaultIstioClient(client.getConfiguration);
+    istioClient.v1beta1VirtualService()
+      .inNamespace(app.getApplicationNamespace)
+      .withLabel(SPARK_APP_TAG_LABEL, app.getApplicationTag).list.getItems.asScala.headOption
   }
 
   private def isDriver: Pod => Boolean = {
@@ -534,11 +546,13 @@ private[utils] class LivyKubernetesClient(
   }
 
   private def buildSparkUIIstioVirtualService(app: KubernetesApplication, gateway: String, host: String, service: Service): VirtualService = {
-
+    val appTag = app.getApplicationTag
     new VirtualServiceBuilder()
       .withNewMetadata()
         .withName(service.getMetadata.getName)
         .withNamespace(service.getMetadata.getNamespace)
+        .addToLabels(SPARK_APP_TAG_LABEL, appTag)
+        .addToLabels(CREATED_BY_LIVY_LABEL.asJava)
       .endMetadata()
       .withNewSpec()
         .withGateways(gateway)
