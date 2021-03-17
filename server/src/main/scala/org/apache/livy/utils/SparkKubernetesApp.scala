@@ -31,7 +31,7 @@ import io.fabric8.kubernetes.api.model.{HasMetadata, OwnerReferenceBuilder, Pod,
 import io.fabric8.kubernetes.api.model.extensions.{Ingress, IngressBuilder}
 import io.fabric8.kubernetes.client._
 import me.snowdrop.istio.api.networking.v1beta1.{HTTPMatchRequestBuilder, HTTPRouteBuilder, HTTPRouteDestinationBuilder, VirtualService, VirtualServiceBuilder}
-import me.snowdrop.istio.client.{DefaultIstioClient}
+import me.snowdrop.istio.client.DefaultIstioClient
 import org.apache.commons.lang.StringUtils
 import org.apache.livy.{LivyConf, Logging, Utils}
 
@@ -445,6 +445,8 @@ private[utils] class LivyKubernetesClient(
   import KubernetesConstants._
   import scala.collection.JavaConverters._
 
+  private val istioClient = new DefaultIstioClient(client.getConfiguration)
+
   private val NAMESPACES: Set[String] = livyConf.getKubernetesNamespaces()
 
   private val NGINX_CONFIG_SNIPPET: String =
@@ -478,6 +480,7 @@ private[utils] class LivyKubernetesClient(
 
   def killApplication(app: KubernetesApplication): Boolean = {
     client.inNamespace(app.getApplicationNamespace).pods.delete(app.getApplicationPod)
+//TODO:    val report = getApplicationReport(app, 1)
   }
 
   def getApplicationReport(
@@ -511,7 +514,6 @@ private[utils] class LivyKubernetesClient(
   }
 
   private def getVirtualService(app: KubernetesApplication): Option[VirtualService] = {
-    val istioClient = new DefaultIstioClient(client.getConfiguration);
     istioClient.v1beta1VirtualService()
       .inNamespace(app.getApplicationNamespace)
       .withLabel(SPARK_APP_TAG_LABEL, app.getApplicationTag).list.getItems.asScala.headOption
@@ -566,7 +568,7 @@ private[utils] class LivyKubernetesClient(
             .withRoute(
               new HTTPRouteDestinationBuilder()
                 .withNewDestination()
-                .withHost(service.toString)
+                .withHost(s"${service.getMetadata.getName}.${service.getMetadata.getNamespace}.svc.cluster.local")
                 .withNewPort(4040).endDestination()
                 .build())
           .build())
