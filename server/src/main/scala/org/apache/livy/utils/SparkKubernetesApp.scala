@@ -391,7 +391,7 @@ private[utils] case class KubernetesAppReport(
     val path = driver
       .map(_.getMetadata.getLabels.getOrDefault(SPARK_APP_TAG_LABEL, "unknown"))
     val protocol = livyConf.get(LivyConf.KUBERNETES_INGRESS_PROTOCOL)
-    val virtualServiceHost = virtualService.flatMap( i => Try(virtualService.get.getSpec.getHosts.get(0)).toOption)
+    val virtualServiceHost = virtualService.flatMap( i => Try(s"http://$virtualService.get.getSpec.getHosts.get(0)").toOption)
     if (host.isDefined && path.isDefined) Some(s"$protocol://${host.get}/${path.get}")
     else if (virtualService.isDefined) virtualServiceHost
     else None
