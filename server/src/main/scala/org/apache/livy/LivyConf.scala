@@ -281,6 +281,8 @@ object LivyConf {
 
   // Whether to create Kubernetes Nginx Ingress for Spark UI.
   val KUBERNETES_INGRESS_CREATE = Entry("livy.server.kubernetes.ingress.create", false)
+  // Kubernetes VirtualService protocol.
+  val KUBERNETES_VIRTUALSERVICE_PROTOCOL = Entry("livy.server.kubernetes.virtualservice.protocol", "http")
   // Kubernetes Nginx Ingress protocol.
   val KUBERNETES_INGRESS_PROTOCOL = Entry("livy.server.kubernetes.ingress.protocol", "http")
   // Kubernetes Nginx Ingress host.
