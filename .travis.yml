@@ -25,10 +25,8 @@ branches:
 
 matrix:
   include:
-  - name: "Spark 3.0 Unit Tests"
-    env: MVN_FLAG='-Pthriftserver -Pspark-3.0 -DskipITs'
-  - name: "Spark 3.0 ITs"
-    env: MVN_FLAG='-Pthriftserver -Pspark-3.0 -DskipTests'
+  - name: "Spark 3.0"
+    env: MVN_FLAG='-Pthriftserver -Pspark-3.0 -DskipTests -DskipITs'
 
 jdk:
   - openjdk11
