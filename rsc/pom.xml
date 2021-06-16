@@ -117,6 +117,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.sedona</groupId>
+      <artifactId>sedona-core-3.0_2.12</artifactId>
+      <version>${sedona.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sedona</groupId>
+      <artifactId>sedona-sql-3.0_2.12</artifactId>
+      <version>${sedona.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
