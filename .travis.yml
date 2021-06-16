@@ -21,7 +21,7 @@ language: scala
   - 2.11.12
 branches:
   only:
-  - cuebiq
+  - sedona-integration
 
 matrix:
   include:
