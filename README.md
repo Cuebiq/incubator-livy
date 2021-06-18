@@ -1,17 +1,21 @@
 # Apache Livy
 
-[![Build Status](https://travis-ci.org/apache/incubator-livy.svg?branch=master)](https://travis-ci.org/apache/incubator-livy)
+[![Build Status](https://travis-ci.com/github/Cuebiq/incubator-livy)](https://travis-ci.com/github/Cuebiq/incubator-livy)
 
 Apache Livy is an open source REST interface for interacting with
 [Apache Spark](http://spark.apache.org) from anywhere. It supports executing snippets of code or
 programs in a Spark context that runs locally or in
 [Apache Hadoop YARN](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html).
+Starting from the job done by (Aliaksandr Sasnouskikh) Apache Livy can schedule Spark application on
+[kubernetes](https://kubernetes.io/).
 
 * Interactive Scala, Python and R shells
 * Batch submissions in Scala, Java, Python
 * Multiple users can share the same server (impersonation support)
 * Can be used for submitting jobs from anywhere with REST
 * Does not require any code change to your programs
+* Possibility to expose SparkUI with Istio Virtual Service
+* Load [Apache sedona](https://sedona.apache.org/) UDF/UDT 
 
 [Pull requests](https://github.com/apache/incubator-livy/pulls) are welcomed! But before you begin,
 please check out the [Contributing](http://livy.incubator.apache.org/community#Contributing)
@@ -71,7 +75,7 @@ cd incubator-livy
 mvn package
 ```
 
-By default Livy is built against Apache Spark 2.4.5, but the version of Spark used when running
+By default Livy is built against Apache Spark 3.1.1, but the version of Spark used when running
 Livy does not need to match the version used to build Livy. Livy internally handles the differences
 between different Spark versions.
 
