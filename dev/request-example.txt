@@ -1,0 +1,24 @@
+curl -s -k -H 'Content-Type: application/json' -X POST \
+-d '{
+    "name": "SparkPi-test2",
+    "className": "org.apache.spark.examples.SparkPi",
+    "numExecutors": 1,
+    "file": "local:///Users/fbalicchia/tools/spark-3.0.1-bin-hadoop2.7/examples/jars/spark-examples_2.12-3.0.1.jar",
+    "args": ["10000"],
+    "conf": {
+        "spark.kubernetes.namespace": "spark"
+    }
+  }' "http://localhost:18998/batches" | jq
+
+
+curl -s -k -H 'Content-Type: application/json' -X POST \
+  -d '{
+  "name": "SparkPi-test",
+  "className": "org.apache.spark.examples.SparkPi",
+  "numExecutors": 1,
+  "file": "local:///opt/spark/examples/jars/spark-examples_2.12-3.0.1.jar",
+  "args": ["10000"],
+  "conf": {
+      "spark.kubernetes.namespace": "spark"
+  }
+}' "http://localhost:18998/batches" | jq
