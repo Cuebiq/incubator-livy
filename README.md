@@ -15,7 +15,7 @@ Starting from the job done by (Aliaksandr Sasnouskikh) Apache Livy can schedule 
 * Can be used for submitting jobs from anywhere with REST
 * Does not require any code change to your programs
 * Possibility to expose SparkUI with Istio Virtual Service
-* Load [Apache sedona](https://sedona.apache.org/) UDF/UDT 
+* Load [Apache sedona](https://sedona.apache.org/) UDF/UDT in Apache Spark context
 
 [Pull requests](https://github.com/apache/incubator-livy/pulls) are welcomed! But before you begin,
 please check out the [Contributing](http://livy.incubator.apache.org/community#Contributing)
@@ -44,7 +44,7 @@ Redhat/CentOS:
 
 MacOS:
   * Xcode command line tools
-  * Oracle's JDK 1.8
+  * Oracle's JDK 1.11
   * Maven (Homebrew)
   * Python 2.7+
   * R 3.x
@@ -81,3 +81,15 @@ between different Spark versions.
 
 The Livy package itself does not contain a Spark distribution. It will work with any supported
 version of Spark without needing to rebuild.
+
+## Developer Environment 
+
+Import project in Idea likes scala projects and continue to import until all compile.
+
+start `org.apache.livy.server.LivyServer` with below customized parameters 
+
+```
+-Dlog4j.configuration=file:///Users/fbalicchia/lab/incubator-livy/conf/log4j.properties
+SPARK_HOME=/Users/fbalicchia/tools/spark-3.0.1-bin-hadoop2.7;LIVY_HOME=/Users/fbalicchia/lab/incubator-livy;LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE=sasnouskikh/livy-spark:0.8.0-incubating-spark_3.0.1_2.12-hadoop_3.2.0_cloud
+```
+
