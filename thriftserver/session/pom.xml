@@ -63,6 +63,24 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.sedona</groupId>
+      <artifactId>sedona-core-3.0_2.12</artifactId>
+      <version>${sedona.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sedona</groupId>
+      <artifactId>sedona-sql-3.0_2.12</artifactId>
+      <version>${sedona.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sedona</groupId>
+      <artifactId>sedona-sql-3.0_2.12</artifactId>
+      <version>1.0.1-incubating</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>

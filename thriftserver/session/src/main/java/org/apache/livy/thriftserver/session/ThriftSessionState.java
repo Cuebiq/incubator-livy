@@ -27,6 +27,8 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import org.apache.livy.JobContext;
+import org.apache.sedona.sql.utils.SedonaSQLRegistrator;
+
 
 /**
  * State related to one Thrift session. One instance of this class is stored in the session's
@@ -44,7 +46,7 @@ class ThriftSessionState {
   static ThriftSessionState get(JobContext ctx, String sessionId) {
     checkNotNull(sessionId, "No session ID.");
     try {
-      return (ThriftSessionState) ctx.getSharedObject(sessionKey(sessionId));
+      return ctx.getSharedObject(sessionKey(sessionId));
     } catch (NoSuchElementException nsee) {
       throw new NoSuchElementException(String.format("Session %s not found.", sessionId));
     }
@@ -77,6 +79,7 @@ class ThriftSessionState {
     this.sessionId = sessionId;
     this.statements = new ConcurrentHashMap<>();
     this.spark = ctx.<SparkSession>sparkSession().newSession();
+    SedonaSQLRegistrator.registerAll(this.spark);
   }
 
   SparkSession spark() {

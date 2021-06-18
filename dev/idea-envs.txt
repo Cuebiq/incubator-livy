@@ -1,0 +1,12 @@
+1: mvn clean package -B -V -e \
+        -Pspark-3.0 \
+        -Pthriftserver \
+        -DskipTests \
+        -DskipITs \
+        -Dmaven.javadoc.skip=true
+2: import project in idea likes scala projects.
+3: continue to import projects until all compile
+
+vmoption:
+-Dlog4j.configuration=file:///Users/fbalicchia/lab/incubator-livy/conf/log4j.properties
+SPARK_HOME=/Users/fbalicchia/tools/spark-3.0.1-bin-hadoop2.7;LIVY_HOME=/Users/fbalicchia/lab/incubator-livy;LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE=sasnouskikh/livy-spark:0.8.0-incubating-spark_3.0.1_2.12-hadoop_3.2.0_cloud
